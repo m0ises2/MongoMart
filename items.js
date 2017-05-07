@@ -276,14 +276,21 @@ function ItemDAO(database) {
          *
          */
 
-        var item = this.createDummyItem();
 
-        // TODO-lab3 Replace all code above (in this method).
+        async function readFromFindOne (  ) {
+          let queryConfig = {
+            _id: itemId
+          };
 
-        // TODO Include the following line in the appropriate
-        // place within your code to pass the matching item
-        // to the callback.
-        callback(item);
+          let data = await this.db.collection('item').findOne( queryConfig );
+
+          callback(data);
+        }
+
+        // Llamamos a la función con el método call debido a que necesitamos el contexto del padre disponnible
+        // dentro de readFromFindOne.
+        readFromFindOne.call(this);
+
     }
 
 
