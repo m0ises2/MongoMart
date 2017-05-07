@@ -37,20 +37,17 @@ function CartDAO(database) {
         * callback function.
         *
         */
+        let queryConfig = {
+            userId: userId
+        };
 
-        var userCart = {
-            userId: userId,
-            items: []
-        }
-        var dummyItem = this.createDummyItem();
-        userCart.items.push(dummyItem);
+        this.db.collection('cart').find( queryConfig, {_id: 0} ).limit(1).toArray( (err, cart) => {
 
-        // TODO-lab5 Replace all code above (in this method).
+          assert.equal(null, err);
 
-        // TODO Include the following line in the appropriate
-        // place within your code to pass the userCart to the
-        // callback.
-        callback(userCart);
+          callback(cart[0]);
+
+        });
     }
 
 
@@ -82,9 +79,44 @@ function CartDAO(database) {
          *
          */
 
-        callback(null);
+         let aggregateConfig = [
+          	{ "$match": { "userId": userId } },
+          	{ "$project": { _id: 0 } },
+          	{ "$unwind": "$items" },
+          	{ "$match": {
+          		"items._id": itemId
+          	} },
+            { "$project": { item: "$items" } }
+          ];
 
-        // TODO-lab6 Replace all code above (in this method).
+          //Con aggregate:
+
+          /*this.db.collection('cart').aggregate(aggregateConfig, (err, results) => {
+
+            assert.equal(null, err);
+
+            console.log("lo que nos importa: ", results[0]);
+
+            if ( results.length !== 0 ) {
+              callback(results[0].item);
+            } else {
+              callback(null);
+            }
+
+          });*/
+
+          // con el operador $ en projection:
+          this.db.collection('cart').find({ userId: userId, "items._id": { "$eq": itemId } }, { "items.$": 1 }).toArray( (err, data) => {
+            assert.equal(null, err);
+
+            if ( data.length !== 0 ) {
+              console.log('algo: ', data[0].items[0]);
+              callback(data[0].items[0]);
+            } else {
+              callback(null);
+            }
+
+          });
     }
 
 

@@ -321,22 +321,39 @@ function ItemDAO(database) {
          *
          */
 
-        var reviewDoc = {
+        let reviewDoc = {
             name: name,
             comment: comment,
             stars: stars,
             date: Date.now()
         }
 
-        // TODO replace the following two lines with your code that will
-        // update the document with a new review.
-        var doc = this.createDummyItem();
-        doc.reviews = [reviewDoc];
+        async function insertReview( review ) {
 
-        // TODO Include the following line in the appropriate
-        // place within your code to pass the updated doc to the
-        // callback.
-        callback(doc);
+          let queryConfig = {
+            _id: itemId
+          }
+          let updateConfig = {
+            '$push': {
+              reviews: review
+            }
+          }
+
+          // Algo nuevo, usar try/catch para el manejo de errores dentro de la promesa del await:
+          try {
+
+            let updatedDoc = await this.db.collection('item').findOneAndUpdate(queryConfig, updateConfig);
+
+            callback(updatedDoc);
+
+          } catch(err) {
+
+            console.log(err);
+
+          }
+        }
+
+        insertReview.call(this, reviewDoc);
     }
 
 

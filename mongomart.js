@@ -46,10 +46,10 @@ var nunjucksDate = require('nunjucks-date');
 nunjucksDate.setDefaultFormat('MMMM Do YYYY, h:mm:ss a');
 env.addFilter("date", nunjucksDate);
 
-var ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 5;
 
 // Hardcoded USERID for use with the shopping cart portion
-var USERID = "558098a65133816958968d88";
+const USERID = "558098a65133816958968d88";
 
 MongoClient.connect('mongodb://localhost:27017/mongomart', function(err, db) {
     "use strict";
